@@ -561,6 +561,7 @@ footer{background:var(--footer-bg);padding:clamp(48px,6vw,80px) 0 0;}
   .footer-grid{grid-template-columns:1fr 1fr;}
   .footer-bottom-bar{flex-direction:column;align-items:flex-start;gap:10px;}
   .footer-bottom-links{flex-wrap:wrap;gap:12px;}
+  .vision-mission-grid{grid-template-columns:1fr!important;}
 }
 @media(max-width:600px){
   .stats-grid{grid-template-columns:1fr;}
@@ -570,93 +571,6 @@ footer{background:var(--footer-bg);padding:clamp(48px,6vw,80px) 0 0;}
   .hero-mini-card{min-width:unset;width:100%;}
   .btn-primary,.btn-secondary,.btn-white{width:100%;justify-content:center;}
   .footer-bottom-links{flex-direction:column;gap:8px;}
-}
-
-/* ─── MOBILE ENHANCEMENTS (≤480px) ──────────────────────── */
-@media(max-width:480px){
-  :root{--nav-h:60px;}
-
-  /* Navbar: tighter on small screens */
-  .navbar{padding:0 14px;}
-  .nav-logo{font-size:15px;gap:8px;}
-  .nav-logo-icon{width:34px;height:34px;}
-  .nav-logo-text span{display:none;}
-
-  /* Hero: better breathing room */
-  .hero{padding:36px 0 32px;}
-  h1{font-size:clamp(28px,8vw,40px);letter-spacing:-1px;}
-  .hero-body{font-size:15px;}
-  .hero-btns{flex-direction:column;gap:10px;}
-  .hero-btns .btn-primary,
-  .hero-btns .btn-secondary,
-  .hero-btns .btn-white{width:100%;justify-content:center;}
-
-  /* Stats strip */
-  .stats-grid{grid-template-columns:1fr;gap:14px;}
-  .stat-num{font-size:clamp(28px,9vw,40px);}
-
-  /* Platform cards */
-  .platform-grid{grid-template-columns:1fr;gap:18px;}
-  .platform-img-wrap{height:140px;}
-
-  /* Why cards */
-  .why-grid{grid-template-columns:1fr;gap:16px;}
-
-  /* Pricing cards */
-  .pricing-grid{grid-template-columns:1fr;gap:20px;}
-  .price-card.featured{transform:none;}
-  .price-card.featured:hover{transform:translateY(-4px);}
-
-  /* Process steps */
-  .process-step{grid-template-columns:1fr;gap:20px;}
-  .step-img{aspect-ratio:16/9;}
-
-  /* Charts */
-  .charts-grid{grid-template-columns:1fr;gap:20px;}
-  .chart-wrap{height:200px;}
-
-  /* Founders */
-  .founders-grid{grid-template-columns:1fr;gap:20px;}
-
-  /* Contact */
-  .contact-wrap{grid-template-columns:1fr;gap:28px;}
-  .contact-form{padding:20px;}
-
-  /* Comparison table */
-  .comp-table-wrap{border-radius:10px;}
-  .comp-table th,.comp-table td{padding:10px 12px;font-size:12px;}
-
-  /* FAQ */
-  .faq-q{padding:14px 16px;}
-  .faq-q h4{font-size:14px;}
-  .faq-body{padding:0 16px 14px;font-size:13px;}
-
-  /* Footer */
-  .footer-grid{grid-template-columns:1fr;gap:28px;}
-  .footer-bottom-bar{flex-direction:column;align-items:flex-start;gap:10px;}
-  .footer-bottom-links{flex-direction:column;gap:8px;}
-  footer{padding:36px 0 0;}
-
-  /* Section headings */
-  .section-h2{font-size:clamp(22px,7vw,32px);}
-
-  /* Buttons full-width on mobile */
-  .btn-primary,.btn-secondary,.btn-white{width:100%;justify-content:center;padding:13px 20px;}
-
-  /* Score card in hero */
-  .score-card{padding:18px;}
-  .score-big-num{font-size:36px;}
-
-  /* Hero mini stats (if shown) */
-  .hero-mini-stats{flex-direction:column;gap:10px;}
-  .hero-mini-card{min-width:unset;width:100%;}
-
-  /* Mobile nav */
-  .mobile-nav{padding:10px 14px 16px;}
-  .mobile-nav button{font-size:12px;padding:11px 10px;}
-
-  /* General container padding */
-  .container{padding:0 14px;}
 }
 </style>
 </head>
@@ -976,7 +890,7 @@ footer{background:var(--footer-bg);padding:clamp(48px,6vw,80px) 0 0;}
   <section class="section-light">
     <div class="container">
       <div class="label-tag">Our Vision & Mission</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:32px;">
+      <div class="vision-mission-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:32px;">
         <div style="background:#fff;border:1px solid rgba(10,36,99,0.15);border-radius:18px;padding:32px;">
           <div style="font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:12px;">Mission</div>
           <h3 style="font-family:var(--display);font-size:22px;font-weight:700;color:var(--text-dark);margin-bottom:16px;">From Reactive Firefighting to Optimised Uptime</h3>

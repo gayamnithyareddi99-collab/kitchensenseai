@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KitchenSense AI | Kitchen Equipment Failure Prediction Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Sora:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+
+:root{
+  /* KitchenSense AI Colours: Deep Navy, Electric Blue, Cyan Accent */
+  --blue:#0A2463;
+  --blue-light:#1D4ED8;
+  --blue-dim:#1E3A8A;
+  --blue-dark:#06163A;
+  --blue-deeper:#030D22;
+
+  --accent:#00D4FF;
+  --accent-light:#E0F7FD;
+  --accent-dim:#38BDF8;
+
+  --nav-bg:#0A2463;
+  --footer-bg:#06163A;
+
+  --bg-white:#F0F6FF;
+  --bg-light:#E8F1FF;
+  --bg-section:#D6E8FF;
+  --bg-card:#FFFFFF;
+
+  --card-border:rgba(10,36,99,0.18);
+  --card-border-strong:rgba(10,36,99,0.38);
+
+  --text-dark:#030D22;
+  --text-mid:#1E3A5F;
+  --text-muted:#3D6494;
+  --text-light:#6B90BC;
+  --white:#FFFFFF;
+
+  --nav-h:72px;
+  --max-w:1200px;
+  --font:'Plus Jakarta Sans',sans-serif;
+  --display:'Sora',sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+  --ease:cubic-bezier(0.4,0,0.2,1);
+  --ease-out:cubic-bezier(0,0,0.2,1);
+}
+
+body{font-family:var(--font);color:var(--text-dark);background:var(--bg-white);overflow-x:hidden;}
+
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--bg-light);}
+::-webkit-scrollbar-thumb{background:var(--blue-light);border-radius:2px;}
+
+img{display:block;max-width:100%;}
+
+/* ─── NAVBAR ─────────────────────────────────────────── */
+.navbar{
+  position:fixed;top:0;left:0;width:100%;height:var(--nav-h);
+  background:var(--nav-bg);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(0,212,255,0.2);
+  z-index:1000;display:flex;align-items:center;
+  padding:0 clamp(16px,5vw,60px);
+  justify-content:space-between;
+  transition:border-color 0.3s;
+  box-shadow:0 2px 24px rgba(0,0,0,0.4);
+}
+.nav-logo{
+  font-family:var(--display);font-size:18px;font-weight:800;
+  color:var(--white);letter-spacing:-0.3px;
+  display:flex;align-items:center;gap:12px;
+  cursor:pointer;text-decoration:none;flex-shrink:0;
+}
+.nav-logo-icon{
+  width:40px;height:40px;
+  background:rgba(0,212,255,0.2);
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  box-shadow:0 4px 14px rgba(0,212,255,0.3);
+  border:1px solid rgba(0,212,255,0.4);
+}
+.nav-logo-icon svg{width:22px;height:22px;fill:none;stroke:#00D4FF;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.nav-logo-text{display:flex;flex-direction:column;line-height:1;}
+.nav-logo-text span{font-size:10px;font-family:var(--mono);font-weight:500;color:rgba(0,212,255,0.8);letter-spacing:2px;text-transform:uppercase;margin-top:3px;}
+
+.nav-links{display:flex;align-items:center;gap:4px;list-style:none;}
+.nav-links li button{
+  background:none;border:none;
+  color:rgba(255,255,255,0.85);
+  font-size:11px;font-weight:600;
+  padding:8px 14px;border-radius:7px;
+  transition:all 0.22s var(--ease);
+  cursor:pointer;font-family:var(--mono);
+  letter-spacing:0.8px;text-transform:uppercase;
+  position:relative;white-space:nowrap;
+}
+.nav-links li button:hover{color:#fff;background:rgba(0,212,255,0.15);}
+.nav-links li button.active{color:#00D4FF;background:rgba(0,212,255,0.12);}
+.nav-links li button.active::after{
+  content:'';position:absolute;bottom:5px;left:50%;
+  transform:translateX(-50%);width:14px;height:2px;
+  background:var(--accent);border-radius:2px;
+}
+
+.nav-right{display:flex;align-items:center;gap:10px;}
+.btn-demo-nav{
+  background:linear-gradient(135deg,var(--accent),var(--accent-dim));
+  color:var(--blue-dark);border:none;padding:9px 20px;border-radius:8px;
+  font-size:11px;font-weight:700;cursor:pointer;
+  transition:all 0.22s;font-family:var(--mono);
+  letter-spacing:0.8px;text-transform:uppercase;white-space:nowrap;
+  box-shadow:0 2px 10px rgba(0,212,255,0.4);
+}
+.btn-demo-nav:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,212,255,0.6);}
+
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;background:none;border:none;flex-shrink:0;}
+.hamburger span{width:22px;height:2px;background:#00D4FF;border-radius:2px;transition:0.3s;display:block;}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+.mobile-nav{
+  display:none;position:fixed;top:var(--nav-h);left:0;width:100%;
+  background:var(--blue-dark);backdrop-filter:blur(20px);
+  padding:12px 20px 20px;flex-direction:column;gap:2px;
+  z-index:999;border-bottom:1px solid rgba(0,212,255,0.2);
+  animation:slideDown 0.25s var(--ease-out);
+}
+@keyframes slideDown{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
+.mobile-nav.open{display:flex;}
+.mobile-nav button{
+  background:none;border:none;color:rgba(255,255,255,0.8);
+  font-size:13px;font-weight:600;padding:13px 12px;
+  border-bottom:1px solid rgba(0,212,255,0.1);
+  cursor:pointer;font-family:var(--mono);text-align:left;
+  text-transform:uppercase;letter-spacing:1px;
+  transition:color 0.2s,background 0.2s;border-radius:6px;
+}
+.mobile-nav button:hover{color:#00D4FF;background:rgba(0,212,255,0.1);}
+.mobile-nav .mob-cta{
+  margin-top:8px;background:linear-gradient(135deg,var(--accent),var(--accent-dim));
+  color:var(--blue-dark);border:none;padding:13px;
+  border-radius:8px;font-weight:700;font-size:12px;
+  letter-spacing:1px;text-transform:uppercase;cursor:pointer;
+  font-family:var(--mono);
+}
+
+/* ─── PAGE SYSTEM ─────────────────────────────────────── */
+.page{display:none;min-height:100vh;padding-top:var(--nav-h);}
+.page.active{display:block;animation:pgIn 0.35s var(--ease);}
+@keyframes pgIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* ─── SECTION COMMONS ─────────────────────────────────── */
+.label-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:10px;font-weight:600;
+  letter-spacing:3px;text-transform:uppercase;
+  color:var(--blue-dim);margin-bottom:14px;
+}
+.label-tag::before{content:'';width:20px;height:1px;background:var(--blue-light);}
+.label-tag-white{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:10px;font-weight:600;
+  letter-spacing:3px;text-transform:uppercase;
+  color:rgba(0,212,255,0.9);margin-bottom:14px;
+}
+.label-tag-white::before{content:'';width:20px;height:1px;background:rgba(0,212,255,0.6);}
+
+.section-h2{
+  font-family:var(--display);font-size:clamp(28px,3.5vw,52px);
+  font-weight:800;line-height:1.1;letter-spacing:-0.8px;
+  margin-bottom:10px;
+}
+.section-h2.blue-txt{color:var(--blue-dark);}
+.section-h2.dark{color:var(--text-dark);}
+.section-h2.white{color:var(--white);}
+
+.section-divider{width:56px;height:3px;margin:16px 0 28px;border-radius:2px;}
+.divider-blue{background:linear-gradient(90deg,var(--accent),transparent);}
+.divider-white{background:linear-gradient(90deg,rgba(0,212,255,0.8),transparent);}
+.divider-center{margin:16px auto 28px;}
+
+.para-dark{color:var(--text-mid);line-height:1.85;font-size:17px;}
+.para-light{color:rgba(255,255,255,0.85);line-height:1.85;font-size:17px;}
+
+.container{max-width:var(--max-w);margin:0 auto;padding:0 clamp(16px,4vw,60px);}
+
+/* ─── BUTTONS ─────────────────────────────────────────── */
+.btn-primary{
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--blue-light),var(--blue));
+  color:var(--white);padding:13px 28px;border-radius:8px;
+  text-decoration:none;font-weight:700;font-size:12px;
+  letter-spacing:0.8px;text-transform:uppercase;
+  transition:all 0.25s;font-family:var(--mono);border:none;cursor:pointer;
+  box-shadow:0 4px 16px rgba(10,36,99,0.4);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(29,78,216,0.5);}
+
+.btn-secondary{
+  display:inline-flex;align-items:center;gap:8px;
+  border:1.5px solid var(--blue-light);color:var(--blue-dark);
+  padding:12px 28px;border-radius:8px;text-decoration:none;
+  font-weight:700;font-size:12px;letter-spacing:0.8px;
+  text-transform:uppercase;transition:all 0.25s;
+  font-family:var(--mono);background:none;cursor:pointer;
+}
+.btn-secondary:hover{background:rgba(10,36,99,0.08);border-color:var(--blue);}
+
+.btn-white{
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-dim));
+  color:var(--blue-dark);padding:12px 28px;border-radius:8px;
+  font-weight:700;font-size:12px;letter-spacing:0.8px;
+  text-transform:uppercase;transition:all 0.25s;
+  font-family:var(--mono);border:none;cursor:pointer;
+  box-shadow:0 4px 16px rgba(0,212,255,0.35);
+}
+.btn-white:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,212,255,0.5);}
+
+/* ─── STATUS BADGES ─────────────────────────────── */
+.risk-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 10px;border-radius:20px;
+  font-size:10px;font-weight:700;font-family:var(--mono);letter-spacing:0.5px;
+}
+.risk-blue{background:rgba(10,36,99,0.1);color:var(--blue-dim);border:1px solid rgba(10,36,99,0.28);}
+.risk-light{background:rgba(0,212,255,0.12);color:var(--blue-dark);border:1px solid rgba(0,212,255,0.3);}
+.risk-green{background:rgba(16,185,129,0.1);color:#059669;border:1px solid rgba(16,185,129,0.25);}
+.risk-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+
+/* ─── HERO ─────────────────────────────────────────────── */
+.hero{
+  background:linear-gradient(140deg,#E8F1FF 0%,#D6E8FF 40%,#C0DBFF 100%);
+  padding:clamp(60px,10vw,100px) 0 clamp(50px,8vw,80px);
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;top:-80px;right:-80px;
+  width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,212,255,0.15) 0%,transparent 70%);
+}
+.hero-inner{
+  max-width:var(--max-w);margin:0 auto;
+  padding:0 clamp(16px,4vw,60px);
+  display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,80px);
+  align-items:center;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(0,212,255,0.15);border:1px solid rgba(0,212,255,0.4);
+  border-radius:30px;padding:6px 16px;
+  font-family:var(--mono);font-size:10px;font-weight:700;
+  color:var(--blue);letter-spacing:1.5px;text-transform:uppercase;
+  margin-bottom:22px;
+}
+.hero-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+h1{
+  font-family:var(--display);font-size:clamp(34px,5vw,64px);
+  font-weight:800;line-height:1.06;letter-spacing:-1.5px;color:var(--text-dark);
+  margin-bottom:6px;
+}
+h1 .blue{color:var(--blue-light);}
+h1 .dark-blue{color:var(--blue);}
+.hero-rule{width:48px;height:3px;background:linear-gradient(90deg,var(--accent),var(--blue-light));border-radius:2px;margin:20px 0;}
+.hero-body{font-size:17px;color:var(--text-mid);line-height:1.8;margin-bottom:28px;max-width:540px;}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;}
+
+.hero-mini-stats{display:flex;gap:14px;margin-top:34px;flex-wrap:wrap;}
+.hero-mini-card{
+  background:rgba(255,255,255,0.85);
+  border:1px solid rgba(0,212,255,0.3);
+  border-radius:12px;padding:14px 18px;min-width:140px;
+  backdrop-filter:blur(8px);
+}
+.hero-mini-card strong{
+  display:block;font-family:var(--display);
+  font-size:22px;font-weight:800;color:var(--blue-dark);
+}
+.hero-mini-card span{font-size:11px;color:var(--text-muted);font-family:var(--mono);}
+
+/* DASHBOARD CARD */
+.score-card{
+  background:#fff;border-radius:18px;
+  border:1px solid rgba(0,212,255,0.25);
+  padding:24px;box-shadow:0 8px 40px rgba(10,36,99,0.15);
+}
+.score-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;}
+.score-card-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.dashboard-title{font-family:var(--display);font-size:17px;font-weight:700;color:var(--text-dark);}
+.live-dot-wrap{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;font-weight:700;color:var(--accent);letter-spacing:1.5px;}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 1.5s infinite;}
+.score-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(10,36,99,0.08);}
+.score-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:9px;font-weight:700;flex-shrink:0;}
+.score-icon.blue-bg{background:rgba(0,212,255,0.15);color:var(--blue);}
+.score-icon.light-bg{background:rgba(10,36,99,0.1);color:var(--blue-dark);}
+.score-icon.green-bg{background:rgba(16,185,129,0.1);color:#059669;}
+.score-lbl{flex:1;font-size:12px;color:var(--text-muted);}
+.score-val{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--text-dark);}
+.score-big{display:flex;align-items:center;gap:16px;margin-top:18px;padding:16px;background:linear-gradient(135deg,rgba(0,212,255,0.08),rgba(10,36,99,0.1));border-radius:12px;border:1px solid rgba(0,212,255,0.2);}
+.score-big-num{font-family:var(--display);font-size:48px;font-weight:800;color:var(--blue-light);line-height:1;}
+.score-big-info .label{font-size:13px;font-weight:700;color:var(--text-dark);}
+.score-big-info .sub{font-size:11px;color:var(--text-muted);margin-top:3px;font-family:var(--mono);}
+
+/* ─── STATS STRIP ─────────────────────────────────────── */
+.section-blue{
+  background:linear-gradient(135deg,var(--blue) 0%,var(--blue-deeper) 100%);
+  padding:clamp(60px,8vw,96px) 0;
+}
+.stats-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:48px;
+}
+.stat-card{
+  background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);
+  border-radius:16px;padding:clamp(20px,3vw,30px);
+  text-align:center;transition:transform 0.25s,border-color 0.25s;
+}
+.stat-card:hover{transform:translateY(-4px);border-color:rgba(0,212,255,0.5);}
+.stat-num{font-family:var(--display);font-size:clamp(32px,4vw,48px);font-weight:800;color:#00D4FF;margin-bottom:10px;}
+.stat-lbl{font-size:13px;color:rgba(255,255,255,0.75);line-height:1.6;}
+
+/* ─── PLATFORM SECTION ─────────────────────────────────── */
+.platform-section{background:var(--bg-white);padding:clamp(60px,8vw,96px) 0;}
+.platform-sub{max-width:760px;margin-bottom:44px;color:var(--text-mid);}
+.platform-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
+.platform-card{
+  background:#fff;border:1px solid rgba(10,36,99,0.15);
+  border-radius:18px;overflow:hidden;
+  transition:border-color 0.3s,box-shadow 0.3s,transform 0.3s;
+  box-shadow:0 2px 12px rgba(10,36,99,0.06);
+}
+.platform-card:hover{border-color:rgba(0,212,255,0.5);box-shadow:0 12px 40px rgba(0,212,255,0.15);transform:translateY(-3px);}
+.platform-img-wrap{width:100%;height:180px;overflow:hidden;background:linear-gradient(135deg,var(--bg-light),var(--bg-section));}
+.platform-img-wrap img{width:100%;height:100%;object-fit:cover;}
+.platform-card .inner{padding:22px;}
+.element-badge{
+  display:inline-block;background:rgba(0,212,255,0.1);
+  color:var(--blue);border-radius:6px;
+  padding:3px 10px;font-family:var(--mono);font-size:9px;
+  font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  margin-bottom:12px;border:1px solid rgba(0,212,255,0.25);
+}
+.platform-card h3{font-family:var(--display);font-size:17px;font-weight:700;color:var(--text-dark);margin-bottom:10px;line-height:1.3;}
+.platform-card p{font-size:13px;color:var(--text-muted);line-height:1.75;}
+.more-text{display:none;font-size:13px;color:var(--text-muted);line-height:1.75;margin-top:10px;padding-top:10px;border-top:1px solid rgba(10,36,99,0.1);}
+.platform-card.open .more-text{display:block;}
+.expand-btn{
+  margin-top:16px;background:none;border:1px solid rgba(10,36,99,0.25);
+  color:var(--blue);padding:7px 18px;border-radius:7px;
+  font-size:11px;font-weight:700;cursor:pointer;font-family:var(--mono);
+  letter-spacing:0.8px;text-transform:uppercase;transition:all 0.2s;
+}
+.expand-btn:hover{background:rgba(0,212,255,0.1);border-color:var(--accent);}
+
+/* ─── WHY SECTION ─────────────────────────────────────── */
+.why-section{background:var(--bg-light);padding:clamp(60px,8vw,96px) 0;}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:44px;}
+.why-card{
+  background:#fff;border:1px solid rgba(10,36,99,0.15);
+  border-radius:16px;padding:clamp(20px,3vw,30px);
+  transition:border-color 0.25s,box-shadow 0.25s;
+}
+.why-card:hover{border-color:rgba(0,212,255,0.4);box-shadow:0 8px 28px rgba(0,212,255,0.12);}
+.why-icon{
+  width:48px;height:48px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(0,212,255,0.15),rgba(10,36,99,0.1));
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:16px;font-size:20px;color:var(--accent);
+  border:1px solid rgba(0,212,255,0.3);
+}
+.why-card h4{font-family:var(--display);font-size:16px;font-weight:700;color:var(--text-dark);margin-bottom:10px;}
+.why-card p{font-size:13px;color:var(--text-muted);line-height:1.75;}
+
+/* ─── SECTION LIGHT / ALT ─────────────────────────────── */
+.section-light{background:var(--bg-white);padding:clamp(60px,8vw,96px) 0;}
+.section-alt{background:var(--bg-light);padding:clamp(60px,8vw,96px) 0;}
+
+/* ─── MARKET CHARTS ─────────────────────────────────────── */
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:44px;}
+.chart-card{
+  background:#fff;border:1px solid rgba(10,36,99,0.15);
+  border-radius:18px;padding:24px;
+  box-shadow:0 4px 16px rgba(10,36,99,0.06);
+}
+.chart-card h4{font-family:var(--display);font-size:15px;font-weight:700;color:var(--text-dark);margin-bottom:4px;}
+.chart-card p{font-size:12px;color:var(--text-muted);margin-bottom:20px;font-family:var(--mono);}
+.chart-wrap{height:260px;position:relative;}
+
+/* ─── ABOUT PAGE ─────────────────────────────────────────── */
+.about-hero{
+  background:linear-gradient(140deg,#D6E8FF 0%,#C0DBFF 60%,#38BDF8 100%);
+  padding:clamp(80px,12vw,120px) 0 clamp(60px,8vw,80px);
+  position:relative;overflow:hidden;
+}
+.about-hero::after{
+  content:'';position:absolute;bottom:-60px;left:-60px;
+  width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,212,255,0.2) 0%,transparent 70%);
+}
+.about-hero .container{position:relative;z-index:1;}
+.founders-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:44px;}
+.founder-card{
+  background:#fff;border:1px solid rgba(10,36,99,0.15);
+  border-radius:18px;padding:clamp(20px,3vw,36px);
+  box-shadow:0 4px 20px rgba(10,36,99,0.08);
+}
+.founder-img{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--blue-light),var(--blue));display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:24px;font-weight:800;color:#fff;margin-bottom:16px;}
+.founder-card h3{font-family:var(--display);font-size:20px;font-weight:700;color:var(--text-dark);margin-bottom:4px;}
+.founder-card .role{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:14px;}
+.founder-card p{font-size:13px;color:var(--text-muted);line-height:1.8;}
+.founder-badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+.f-badge{background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.25);border-radius:20px;padding:4px 12px;font-family:var(--mono);font-size:10px;color:var(--blue);letter-spacing:0.5px;}
+
+/* ─── FAQ ─────────────────────────────────────────────── */
+.faq-wrap{display:flex;flex-direction:column;gap:12px;margin-top:32px;}
+.faq-item{background:#fff;border:1px solid rgba(10,36,99,0.15);border-radius:14px;overflow:hidden;}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;gap:16px;}
+.faq-q h4{font-family:var(--display);font-size:15px;font-weight:600;color:var(--text-dark);}
+.faq-icon{font-size:20px;font-weight:300;color:var(--blue-light);flex-shrink:0;transition:transform 0.3s;}
+.faq-item.open .faq-icon{transform:rotate(45deg);}
+.faq-body{display:none;padding:0 22px 18px;font-size:14px;color:var(--text-muted);line-height:1.8;border-top:1px solid rgba(10,36,99,0.08);}
+.faq-item.open .faq-body{display:block;}
+
+/* ─── PRICING ─────────────────────────────────────────── */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:44px;}
+.price-card{
+  background:#fff;border:1px solid rgba(10,36,99,0.15);
+  border-radius:18px;padding:clamp(22px,3vw,36px);
+  position:relative;transition:border-color 0.25s,box-shadow 0.25s,transform 0.25s;
+  box-shadow:0 4px 16px rgba(10,36,99,0.06);
+}
+.price-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,212,255,0.18);}
+.price-card.featured{
+  border:2px solid var(--accent);
+  box-shadow:0 8px 40px rgba(0,212,255,0.25);
+  transform:scale(1.03);
+}
+.price-card.featured:hover{transform:scale(1.03) translateY(-4px);}
+.featured-label{
+  position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,var(--accent),var(--blue-light));
+  color:var(--blue-dark);padding:4px 18px;border-radius:20px;
+  font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  white-space:nowrap;
+}
+.price-tier{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:8px;}
+.price-title{font-family:var(--display);font-size:20px;font-weight:700;color:var(--text-dark);margin-bottom:12px;}
+.price-amount{font-family:var(--display);font-size:clamp(34px,4vw,48px);font-weight:800;color:var(--blue-dark);line-height:1;}
+.price-amount span{font-size:16px;font-weight:500;color:var(--text-muted);}
+.price-desc{font-size:13px;color:var(--text-muted);margin:12px 0 20px;line-height:1.6;}
+.price-features{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:28px;}
+.price-features li{font-size:13px;color:var(--text-mid);display:flex;align-items:flex-start;gap:8px;}
+.price-features li::before{content:'✓';color:var(--blue-light);font-weight:700;flex-shrink:0;margin-top:1px;}
+
+/* ─── PROCESS ─────────────────────────────────────────── */
+.process-step{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:clamp(30px,5vw,72px);align-items:center;
+  margin-bottom:clamp(56px,8vw,96px);
+}
+.process-step:last-child{margin-bottom:0;}
+.step-num{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--blue);margin-bottom:12px;}
+.step-h3{font-family:var(--display);font-size:clamp(22px,2.5vw,32px);font-weight:800;color:var(--text-dark);margin-bottom:16px;line-height:1.2;}
+.step-p{color:var(--text-muted);font-size:15px;line-height:1.8;margin-bottom:18px;}
+.step-img{width:100%;aspect-ratio:16/10;border-radius:16px;border:1px solid rgba(0,212,255,0.25);overflow:hidden;box-shadow:0 8px 32px rgba(10,36,99,0.12);}
+.step-img img{width:100%;height:100%;object-fit:cover;}
+
+/* Image placeholders */
+.img-placeholder{
+  width:100%;height:100%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;color:var(--blue);
+  background:linear-gradient(135deg,var(--bg-light),var(--bg-section));
+}
+.img-placeholder i{font-size:36px;opacity:0.5;}
+.img-placeholder span{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;opacity:0.6;}
+
+/* ─── CONTACT ─────────────────────────────────────────── */
+.contact-hero{
+  background:linear-gradient(140deg,var(--blue) 0%,var(--blue-deeper) 100%);
+  padding:clamp(60px,8vw,96px) 0;
+}
+.contact-wrap{display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:44px;}
+.contact-form{background:#fff;border-radius:18px;padding:clamp(24px,4vw,40px);box-shadow:0 8px 40px rgba(0,0,0,0.15);}
+.form-group{margin-bottom:20px;}
+.form-group label{display:block;font-size:12px;font-weight:700;color:var(--text-dark);margin-bottom:8px;font-family:var(--mono);letter-spacing:0.5px;text-transform:uppercase;}
+.form-group input,.form-group select,.form-group textarea{
+  width:100%;padding:12px 16px;border:1.5px solid rgba(10,36,99,0.18);
+  border-radius:10px;font-size:14px;font-family:var(--font);
+  color:var(--text-dark);background:#fff;
+  transition:border-color 0.2s,box-shadow 0.2s;outline:none;
+}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,255,0.15);}
+.form-group textarea{min-height:120px;resize:vertical;}
+.contact-info{display:flex;flex-direction:column;gap:0;}
+.contact-info h3{font-family:var(--display);font-size:22px;font-weight:700;color:#fff;margin-bottom:16px;}
+.contact-info p{font-size:15px;color:rgba(255,255,255,0.75);line-height:1.7;margin-bottom:28px;}
+.contact-detail{display:flex;align-items:flex-start;gap:16px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,0.1);}
+.contact-detail .icon{width:44px;height:44px;background:rgba(0,212,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--accent);flex-shrink:0;font-size:18px;}
+.contact-detail .text strong{display:block;font-size:13px;font-weight:700;color:#fff;margin-bottom:2px;}
+.contact-detail .text span{font-size:13px;color:rgba(255,255,255,0.65);}
+
+/* ─── FOOTER ─────────────────────────────────────────── */
+footer{background:var(--footer-bg);padding:clamp(48px,6vw,80px) 0 0;}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px;}
+.footer-brand{font-family:var(--display);font-size:22px;font-weight:800;color:#fff;margin-bottom:14px;}
+.footer-desc{font-size:13px;color:rgba(255,255,255,0.65);line-height:1.8;margin-bottom:20px;}
+.footer-badges{display:flex;flex-wrap:wrap;gap:8px;}
+.footer-badge{background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.25);border-radius:20px;padding:4px 12px;font-family:var(--mono);font-size:10px;color:rgba(0,212,255,0.9);letter-spacing:0.5px;}
+.footer-col-title{font-family:var(--mono);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:16px;}
+.footer-col{display:flex;flex-direction:column;gap:10px;}
+.footer-col a{font-size:13px;color:rgba(255,255,255,0.65);cursor:pointer;transition:color 0.2s;}
+.footer-col a:hover{color:#00D4FF;}
+.footer-bottom-bar{border-top:1px solid rgba(255,255,255,0.1);padding:20px 0;display:flex;align-items:center;justify-content:space-between;}
+.footer-bottom-bar p{font-size:12px;color:rgba(255,255,255,0.45);font-family:var(--mono);}
+.footer-bottom-bar p span{color:rgba(0,212,255,0.8);}
+.footer-bottom-links{display:flex;gap:20px;}
+.footer-bottom-links a{font-size:12px;color:rgba(255,255,255,0.5);cursor:pointer;font-family:var(--mono);transition:color 0.2s;}
+.footer-bottom-links a:hover{color:rgba(0,212,255,0.85);}
+
+/* ─── COMPARISON TABLE ───────────────────────── */
+.comp-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:40px;border-radius:16px;border:1px solid rgba(10,36,99,0.15);box-shadow:0 4px 16px rgba(10,36,99,0.06);}
+.comp-table{width:100%;border-collapse:collapse;background:#fff;}
+.comp-table th{background:linear-gradient(135deg,var(--blue),var(--blue-deeper));color:#fff;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:16px 18px;text-align:left;}
+.comp-table th:first-child{border-radius:16px 0 0 0;}
+.comp-table th:last-child{border-radius:0 16px 0 0;}
+.comp-table td{padding:14px 18px;font-size:13px;color:var(--text-mid);border-bottom:1px solid rgba(10,36,99,0.08);}
+.comp-table tr:last-child td{border-bottom:none;}
+.comp-table tr:hover td{background:rgba(0,212,255,0.04);}
+.comp-table td:first-child{font-weight:600;color:var(--text-dark);}
+.comp-table .yes{color:#059669;font-weight:700;}
+.comp-table .no{color:#94a3b8;font-weight:500;}
+.comp-table .highlight-col{background:rgba(0,212,255,0.06);}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────── */
+@media(max-width:900px){
+  .nav-links{display:none;}
+  .hamburger{display:flex;}
+  .btn-demo-nav{display:none;}
+  .hero-inner{grid-template-columns:1fr;gap:40px;}
+  .hero-inner > div:last-child{display:none;}
+  .hero .hero-mini-stats{display:none;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .platform-grid{grid-template-columns:1fr;}
+  .why-grid{grid-template-columns:1fr 1fr;}
+  .pricing-grid{grid-template-columns:1fr;}
+  .price-card.featured{transform:scale(1);}
+  .process-step{grid-template-columns:1fr;gap:28px;}
+  .step-img{aspect-ratio:16/9;}
+  .contact-wrap{grid-template-columns:1fr;}
+  .charts-grid{grid-template-columns:1fr;}
+  .founders-grid{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+  .footer-bottom-bar{flex-direction:column;align-items:flex-start;gap:10px;}
+  .footer-bottom-links{flex-wrap:wrap;gap:12px;}
+}
+@media(max-width:600px){
+  .stats-grid{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr;}
+  .why-grid{grid-template-columns:1fr;}
+  .hero-mini-stats{flex-direction:column;}
+  .hero-mini-card{min-width:unset;width:100%;}
+  .btn-primary,.btn-secondary,.btn-white{width:100%;justify-content:center;}
+  .footer-bottom-links{flex-direction:column;gap:8px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     NAVBAR
+═══════════════════════════════════════════════ -->
+<nav class="navbar">
+  <a class="nav-logo" onclick="showPage('home')">
+    
+    <!-- Logo icon removed -->
+
+    <div class="nav-logo-text">
+      KitchenSense AI
+      <span>Predict. Prevent. Perform. Profit.</span>
+    </div>
+  </a>
+
+  <ul class="nav-links">
+    <li><button id="nav-home" class="active" onclick="showPage('home')">Home</button></li>
+    <li><button id="nav-about" onclick="showPage('about')">About</button></li>
+    <li><button id="nav-platform" onclick="showPage('platform')">Platform</button></li>
+    <li><button id="nav-market" onclick="showPage('market')">Market</button></li>
+    <li><button id="nav-process" onclick="showPage('process')">Process</button></li>
+    <li><button id="nav-faq" onclick="showPage('faq')">FAQ</button></li>
+    <li><button id="nav-pricing" onclick="showPage('pricing')">Pricing</button></li>
+    <li><button id="nav-contact" onclick="showPage('contact')">Contact</button></li>
+  </ul>
+
+  <div class="nav-right">
+    <button class="btn-demo-nav" onclick="showPage('contact')">Request Demo</button>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile Nav -->
+<div class="mobile-nav" id="mobileNav">
+  <button onclick="showPage('home');closeMobile()">Home</button>
+  <button onclick="showPage('about');closeMobile()">About</button>
+  <button onclick="showPage('platform');closeMobile()">Platform</button>
+  <button onclick="showPage('market');closeMobile()">Market</button>
+  <button onclick="showPage('process');closeMobile()">Process</button>
+  <button onclick="showPage('faq');closeMobile()">FAQ</button>
+  <button onclick="showPage('pricing');closeMobile()">Pricing</button>
+  <button onclick="showPage('contact');closeMobile()">Contact</button>
+  <button class="mob-cta" onclick="showPage('contact');closeMobile()">Request Demo →</button>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     PAGE : HOME
+═══════════════════════════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          UK's First AI Kitchen Equipment Failure Prediction Platform
+        </div>
+        <h1>
+          Predict.<br>
+          <span class="blue">Prevent</span> Downtime.
+          <span class="dark-blue">Maximize Performance.</span>
+        </h1>
+        <div class="hero-rule"></div>
+        <p class="hero-body">
+          KitchenSense AI is an AI-powered predictive maintenance and equipment intelligence platform tailored for the UK's high-pressure hospitality and food-service sectors. We eliminate the "Downtime Gap"  turning reactive firefighting into optimised uptime, protecting margins, ensuring fire safety, and guaranteeing operational continuity.
+        </p>
+        <div class="hero-btns">
+          <button class="btn-primary" onclick="showPage('contact')">Book a Platform Demo</button>
+          <button class="btn-secondary" onclick="showPage('platform')">Explore Platform</button>
+        </div>
+        
+        
+      </div>
+      <!-- DASHBOARD -->
+      <div>
+        <div class="score-card">
+          <div class="score-card-top">
+            <div>
+              <div class="score-card-label">KitchenSense AI · Live Engine</div>
+              <h3 class="dashboard-title">Equipment Health Dashboard</h3>
+            </div>
+            <div class="live-dot-wrap"><span class="live-dot"></span>LIVE</div>
+          </div>
+          <div class="score-row">
+            <div class="score-icon blue-bg">EQ</div>
+            <span class="score-lbl">Total Equipment Monitored</span>
+            <span class="score-val">128 Assets ↑18%</span>
+          </div>
+          <div class="score-row">
+            <div class="score-icon green-bg">UP</div>
+            <span class="score-lbl">Equipment Availability</span>
+            <span class="score-val">96.8% ↑3.2%</span>
+          </div>
+          <div class="score-row">
+            <div class="score-icon light-bg">AT</div>
+            <span class="score-lbl">Assets At Risk (7-Day Forecast)</span>
+            <span class="score-val">23 Flagged ↑12%</span>
+          </div>
+          <div class="score-row">
+            <div class="score-icon blue-bg">CS</div>
+            <span class="score-lbl">Cost Savings (YTD)</span>
+            <span class="score-val">£126K ↑32%</span>
+          </div>
+          <div class="score-big">
+            <div class="score-big-num">42<span style="font-size:24px;">hrs</span></div>
+            <div class="score-big-info">
+              <div class="label">Downtime Avoided This Month</div>
+              <div class="sub">AI Predictive Engine · ↑30% vs Last Month</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS STRIP -->
+  <section class="section-blue">
+    <div class="container">
+      <div class="label-tag-white">The UK Kitchen Equipment Crisis</div>
+      <h2 class="section-h2 white">UK Kitchens Are Losing Millions to<br>Unplanned Equipment Failures.</h2>
+      <div class="section-divider divider-white"></div>
+      <p class="para-light" style="max-width:760px;">
+        The UK's 176,685 hospitality businesses face a systemic "Downtime Gap"  where critical asset management is still dominated by reactive, "run-to-fail" maintenance strategies and manual inspections. Every fryer breakdown, compressor failure, or extraction fan fault costs thousands in lost revenue, emergency repairs, and fire safety risk. KitchenSense AI is the predictive intelligence layer that eliminates this gap entirely.
+      </p>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-num">£5,600</div>
+          <div class="stat-lbl">Revenue lost per hour during peak-time equipment failure across UK hospitality operations</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">19%</div>
+          <div class="stat-lbl">Of all UK workplace fires originate in food & drink premises  most preventable with predictive maintenance</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">99.6%</div>
+          <div class="stat-lbl">Of UK hospitality businesses are SMEs currently underserved by enterprise-grade monitoring systems</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">3–5×</div>
+          <div class="stat-lbl">Cost premium of reactive emergency repairs vs planned predictive interventions for kitchen equipment</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLATFORM PREVIEW -->
+  <section class="platform-section">
+    <div class="container">
+      <div class="label-tag">Core Intelligence Modules</div>
+      <h2 class="section-h2 dark">Six Modules. One Complete Kitchen Reliability Platform.</h2>
+      <div class="section-divider divider-blue"></div>
+      <p class="para-dark platform-sub">
+        KitchenSense AI combines real-time monitoring, failure fingerprinting, predictive diagnostics, fire safety intelligence, energy optimisation, and federated benchmarking into one unified SaaS platform  retrofit-friendly, no-code, and built specifically for UK hospitality SMEs.
+      </p>
+      <div class="platform-grid">
+        <!-- CARD 1 -->
+        <div class="platform-card">
+          <div class="platform-img-wrap">
+            <img src="KIT1.jpg" alt="Real-Time Equipment Monitoring">
+          </div>
+          <div class="inner">
+            <div class="element-badge">Module 01</div>
+            <h3>Real-Time Equipment Monitoring</h3>
+            <p>Continuously monitor the health and performance of all kitchen assets through IoT sensor nodes capturing vibration, thermal drift, and electrical signals in real-time.</p>
+            <div class="more-text">
+              The Installation-to-Intervention engine ingests multi-asset telemetry from accelerometers, thermal probes, and current clamps  parsing subtle spectral anomalies in motor vibrations, thermal drifts in heating elements, and electrical current spikes  mapping them into a structured Kitchen Asset Ontology (KAO). Every asset receives a live "Reliability DNA" profile updated continuously.
+            </div>
+            <button class="expand-btn" onclick="toggleCard(this)">Learn More</button>
+          </div>
+        </div>
+        <!-- CARD 2 -->
+        <div class="platform-card">
+          <div class="platform-img-wrap">
+            <img src="KIT2.jpg" alt="Failure Prediction AI">
+          </div>
+          <div class="inner">
+            <div class="element-badge">Module 02</div>
+            <h3>AI Failure Fingerprinting & Prediction</h3>
+            <p>Our proprietary machine learning models identify the unique "Failure Fingerprint" of each asset  detecting degradation signals weeks before catastrophic failure occurs.</p>
+            <div class="more-text">
+              Asset Failure Fingerprinting uses ML to identify subtle spectral patterns  micro-vibrations in extraction fans or electrical noise in fryer thermostats  that precede catastrophic failure. Remaining Useful Life (RUL) Delta Diagnostics automatically diagnoses root causes of premature wear, delivering a 2-to-6 week advance warning window with 92% accuracy.
+            </div>
+            <button class="expand-btn" onclick="toggleCard(this)">Learn More</button>
+          </div>
+        </div>
+        <!-- CARD 3 -->
+        <div class="platform-card">
+          <div class="platform-img-wrap">
+            <img src="KIT3.jpg" alt="Preventive Maintenance">
+          </div>
+          <div class="inner">
+            <div class="element-badge">Module 03</div>
+            <h3>Signal-to-Action Auto-Synthesis</h3>
+            <p>Automatically converts complex mechanical signals into clear, multi-step maintenance workflows  no manual engineering review required from kitchen staff.</p>
+            <div class="more-text">
+              Signal-to-Action Auto-Synthesis deconstructs a single mechanical signal (e.g., a 2-degree thermal drift or an amp spike) into a structured "Asset Health Report" with actionable remediation steps. Risk-Weighted Maintenance Evolution automatically prioritises interventions for high-dependency assets like primary grills or walk-in freezers based on real-time degradation trends.
+            </div>
+            <button class="expand-btn" onclick="toggleCard(this)">Learn More</button>
+          </div>
+        </div>
+        <!-- CARD 4 -->
+        <div class="platform-card">
+          <div class="platform-img-wrap">
+            <img src="KIT4.jpg" alt="Fire Safety Intelligence">
+          </div>
+          <div class="inner">
+            <div class="element-badge">Module 04</div>
+            <h3>Fire Safety & HSE Compliance</h3>
+            <p>Proactively detect electrical faults and fat-accumulation-driven overheating 2–6 weeks before ignition  reducing the 19% fire risk associated with UK food premises.</p>
+            <div class="more-text">
+              The Machine-in-the-Loop Safety Index assesses the reliability of automated kitchen workflows, flagging overheated electrical circuits or fat-pan ignition risks early. The platform generates audit-ready HSE and Fire Safety compliance reports, aligning with the Fire Safety Act 2021 and FSA requirements. Every intervention is logged with verifiable Reliability Logic chains for regulatory inquiries.
+            </div>
+            <button class="expand-btn" onclick="toggleCard(this)">Learn More</button>
+          </div>
+        </div>
+        <!-- CARD 5 -->
+        <div class="platform-card">
+          <div class="platform-img-wrap">
+            <img src="KIT5.jpg" alt="Performance Analytics">
+          </div>
+          <div class="inner">
+            <div class="element-badge">Module 05</div>
+            <h3>Performance Analytics & Digital Twin</h3>
+            <p>Comprehensive Reliability Dashboards linking predictive interventions to direct financial margin protection, energy consumption, and operational continuity metrics.</p>
+            <div class="more-text">
+              The Kitchen Digital Twin Simulation virtually tests the impact of operational changes  increasing fryer temperatures for peak demand or adjusting refrigerator defrost cycles  against historical telemetry. ESG and Resilience Reporting generates CFO-ready reports showing how compiled Reliability Logic has reduced carbon footprints and Margin-at-Risk, aligned with UK Net Zero 2050 targets.
+            </div>
+            <button class="expand-btn" onclick="toggleCard(this)">Learn More</button>
+          </div>
+        </div>
+        <!-- CARD 6 -->
+        <div class="platform-card">
+          <div class="platform-img-wrap">
+            <img src="KIT6.jpg" alt="Federated Network">
+          </div>
+          <div class="inner">
+            <div class="element-badge">Module 06</div>
+            <h3>Federated Reliability Logic Network</h3>
+            <p>Anonymised sector-wide benchmarking allows independent restaurants to leverage collective intelligence  what works in Manchester improves reliability in Birmingham.</p>
+            <div class="more-text">
+              The Federated Reliability Logic Network (FRLN) enables anonymised "Reliability DNA" from hundreds of UK hospitality sites to constantly improve predictive models without sharing sensitive commercial data. Insights from high-efficiency dark kitchens in Manchester can optimise maintenance strategies for a mid-market restaurant in Birmingham, creating a collective intelligence ecosystem that grows stronger over time.
+            </div>
+            <button class="expand-btn" onclick="toggleCard(this)">Learn More</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY SECTION -->
+  <section class="why-section">
+    <div class="container">
+      <div class="label-tag">Why KitchenSense AI</div>
+      <h2 class="section-h2 dark">Built Exclusively for UK Hospitality SMEs.</h2>
+      <div class="section-divider divider-blue"></div>
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-icon"><i class="fas fa-brain"></i></div>
+          <h4>Predictive, Not Reactive</h4>
+          <p>Our models predict catastrophic failure risk weeks in advance  not just after a crisis has begun. Move from emergency repairs to planned, logic-driven interventions.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon"><i class="fas fa-plug"></i></div>
+          <h4>Retrofit-First Design</h4>
+          <p>Works above any existing hardware  fryers, ovens, fridges, extraction systems. No equipment lock-in. Plug-and-play sensor nodes deploy in hours, not weeks.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon"><i class="fas fa-shield-alt"></i></div>
+          <h4>Institutional Memory Protection</h4>
+          <p>Capture expert mechanical knowledge as permanent organisational "Reliability Equity"  so asset intelligence stays even after senior staff depart.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon"><i class="fas fa-pound-sign"></i></div>
+          <h4>SME-Optimised Pricing</h4>
+          <p>Tiered SaaS pricing from £50/month gives independent takeaways the same predictive intelligence previously reserved for global fast-food giants.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon"><i class="fas fa-flag"></i></div>
+          <h4>UK-Specific Intelligence</h4>
+          <p>Models trained on UK Home Office fire statistics, HSE electrical fault patterns, and British appliance profiles  hyper-localised for British regulatory standards.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon"><i class="fas fa-leaf"></i></div>
+          <h4>Net Zero Aligned</h4>
+          <p>Reduce mechanical energy waste by 20–30% per institution through precision maintenance routing, extending asset life by up to 40% toward UK Net Zero 2050 goals.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /page-home -->
+
+
+<!-- ═══════════════════════════════════════════
+     PAGE : ABOUT
+═══════════════════════════════════════════════ -->
+<div class="page" id="page-about">
+  <section class="about-hero">
+    <div class="container">
+      <div class="label-tag">About KitchenSense AI</div>
+      <h2 class="section-h2 dark">Bridging the Downtime Gap Through Kitchen Intelligence.</h2>
+      <div class="section-divider divider-blue"></div>
+      <p class="para-dark" style="max-width:800px;">
+        KitchenSense AI (trading as the Kitchen Equipment Failure Prediction Platform) is an AI-driven, predictive maintenance and equipment intelligence infrastructure platform tailored specifically toward the UK's high-pressure hospitality and food-service sectors. Our mission is to enable UK hospitality operators to move from "reactive firefighting" to "optimised uptime"  eliminating the Downtime Gap and protecting institutional reliability memory.
+      </p>
+    </div>
+  </section>
+
+  <section class="section-light">
+    <div class="container">
+      <div class="label-tag">Our Vision & Mission</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:32px;">
+        <div style="background:#fff;border:1px solid rgba(10,36,99,0.15);border-radius:18px;padding:32px;">
+          <div style="font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:12px;">Mission</div>
+          <h3 style="font-family:var(--display);font-size:22px;font-weight:700;color:var(--text-dark);margin-bottom:16px;">From Reactive Firefighting to Optimised Uptime</h3>
+          <p style="color:var(--text-muted);font-size:14px;line-height:1.8;">To enable UK hospitality operators to move from reactive firefighting to optimised uptime by leveraging a predictive mechanical compiler that eliminates the downtime gap and protects institutional reliability memory.</p>
+        </div>
+        <div style="background:#fff;border:1px solid rgba(10,36,99,0.15);border-radius:18px;padding:32px;">
+          <div style="font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:12px;">Vision</div>
+          <h3 style="font-family:var(--display);font-size:22px;font-weight:700;color:var(--text-dark);margin-bottom:16px;">The Global Standard for Reliability-Ops</h3>
+          <p style="color:var(--text-muted);font-size:14px;line-height:1.8;">We aspire to be the global standard for "Reliability-Ops," fostering a future in which commercial kitchen assets are automatically synchronised with operational service needs, ensuring continuous kitchen readiness and zero-gap margin protection.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-alt">
+    <div class="container">
+      <div class="label-tag">Core Values</div>
+      <h2 class="section-h2 dark">What Drives KitchenSense AI</h2>
+      <div class="section-divider divider-blue"></div>
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-icon"><i class="fas fa-lightbulb"></i></div>
+          <h4>Innovation</h4>
+          <p>Continuous refinement of Installation-to-Intervention models to stay ahead of mechanical wear cycles of high-intensity kitchen environments and global safety trends.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon"><i class="fas fa-bullseye"></i></div>
+          <h4>Accuracy</h4>
+          <p>A commitment to mechanical-telemetry integrity and the elimination of "equipment intuition loss" in kitchen asset mapping  92% pre-failure detection accuracy.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon"><i class="fas fa-lock"></i></div>
+          <h4>Sovereignty</h4>
+          <p>Empowering hospitality operators to own their operational reliability logic as a proprietary and permanent business asset  never locked into external contractors.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon"><i class="fas fa-bolt"></i></div>
+          <h4>Efficiency</h4>
+          <p>Making complex equipment lifecycles manageable through machine-executable maintenance pathways and low-friction retrofit sensor integrations.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon"><i class="fas fa-users"></i></div>
+          <h4>Stewardship</h4>
+          <p>Equipping head chefs and facilities directors with automated foresight needed to scale kitchen footprints without headcount-proportional maintenance costs.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon"><i class="fas fa-globe"></i></div>
+          <h4>ESG Impact</h4>
+          <p>Generating CFO-ready reports showing how Reliability Logic reduces carbon footprints and Margin-at-Risk, aligned with UK Net Zero 2050 targets and FSA compliance.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOUNDER -->
+  <section class="section-light">
+    <div class="container">
+      <div class="label-tag">Founder Fit</div>
+      <h2 class="section-h2 dark">Meet the Founder</h2>
+      <div class="section-divider divider-blue"></div>
+      <div class="founders-grid">
+        <div class="founder-card">
+          <div class="founder-img">DG</div>
+          <h3>Dilipvan Gauswami</h3>
+          <div class="role">Founder & CEO · KitchenSense AI</div>
+          <p>Dilipvan possesses a high-intensity blend of advanced data analytics, machine learning, and operational strategy experience  creating a unique "founder–problem–market fit" to lead the Kitchen Equipment Failure Prediction Platform in the UK. His background bridges the gap between raw mechanical telemetry and actionable business intelligence, providing first-hand expertise in solving the Operational Downtime Gap that currently results in multi-billion pound revenue losses across the UK's hospitality sector.</p>
+          <p style="margin-top:12px;">As a Data Analyst proficient in Python, SQL, and Power BI, Dilipvan has a proven track record of converting complex datasets into high-performance diagnostic tools. With certifications in Machine Learning and Data Analysis from IBM and Coursera, he is uniquely qualified to architect the Reliability Delta Diagnostics (RDD) engine.</p>
+          <div class="founder-badges">
+            <span class="f-badge">Python & ML</span>
+            <span class="f-badge">SQL & Power BI</span>
+            <span class="f-badge">Predictive Analytics</span>
+            <span class="f-badge">IoT Sensor Integration</span>
+            <span class="f-badge">UK Hospitality Expert</span>
+            <span class="f-badge">IBM & Coursera Certified</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <div style="background:linear-gradient(135deg,var(--blue),var(--blue-dark));border-radius:18px;padding:28px;color:#fff;">
+            <div style="font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(0,212,255,0.8);margin-bottom:12px;">Why Dilipvan Leads This</div>
+            <h3 style="font-family:var(--display);font-size:20px;font-weight:700;margin-bottom:14px;">Deep Domain Synergy</h3>
+            <p style="font-size:14px;color:rgba(255,255,255,0.8);line-height:1.8;">The primary reason Dilipvan is exceptionally qualified is his ability to unify the worlds of Predictive Data Science and Operational Kitchen Logic. While traditional maintenance firms rely on manual logs and reactive repairs, Dilipvan treats equipment health as a data-governance problem  linking mechanical metrics like motor frequency directly to commercial outcomes like peak-time service continuity.</p>
+          </div>
+          <div style="background:#fff;border:1px solid rgba(10,36,99,0.15);border-radius:18px;padding:28px;">
+            <div style="font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:14px;">Key Achievements</div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="display:flex;align-items:center;gap:12px;font-size:14px;color:var(--text-mid);">
+                <span style="color:var(--accent);font-size:18px;">✓</span> Developed Kitchen Asset Ontology (KAO) schema from 3,000+ maintenance logs
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;font-size:14px;color:var(--text-mid);">
+                <span style="color:var(--accent);font-size:18px;">✓</span> Achieved 92% pre-failure detection accuracy in prototype validation
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;font-size:14px;color:var(--text-mid);">
+                <span style="color:var(--accent);font-size:18px;">✓</span> Validated 50% reduction in emergency call-outs via RDD mechanism
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;font-size:14px;color:var(--text-mid);">
+                <span style="color:var(--accent);font-size:18px;">✓</span> Secured 7 Letters of Intent from UK dark kitchens and franchises
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;font-size:14px;color:var(--text-mid);">
+                <span style="color:var(--accent);font-size:18px;">✓</span> 32% peak-hour uptime increase in 12-week pilot programme
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div><!-- /page-about -->
+
+
+<!-- ═══════════════════════════════════════════
+     PAGE : PLATFORM
+═══════════════════════════════════════════════ -->
+<div class="page" id="page-platform">
+  <section style="background:linear-gradient(140deg,var(--blue) 0%,var(--blue-deeper) 100%);padding:clamp(80px,12vw,120px) 0 clamp(60px,8vw,80px);">
+    <div class="container">
+      <div class="label-tag-white">The Full Platform</div>
+      <h2 class="section-h2 white">The Installation-to-Intervention Engine</h2>
+      <div class="section-divider divider-white"></div>
+      <p class="para-light" style="max-width:760px;">
+        A unified, machine-executable intelligence layer that converts fragmented asset telemetry into actionable maintenance logic. Unlike legacy maintenance contracts or manual "snapshot" checks, KitchenSense AI establishes a continuous asset-monitoring lifecycle  transforming maintenance from an unpredictable, margin-eroding variable into a precise, automated driver of business continuity and safety.
+      </p>
+    </div>
+  </section>
+
+  <section class="section-light">
+    <div class="container">
+      <div class="label-tag">Proprietary Technology</div>
+      <h2 class="section-h2 dark">What Makes the Concept Novel</h2>
+      <div class="section-divider divider-blue"></div>
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-icon"><i class="fas fa-dna"></i></div>
+          <h4>Installation-to-Intervention Lifecycle</h4>
+          <p>A first-of-its-kind framework bridging raw machine telemetry (vibration, heat, current) and real-time maintenance outcomes  creating a continuous feedback loop that improves failure-prediction accuracy with every equipment cycle.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon"><i class="fas fa-fingerprint"></i></div>
+          <h4>Asset Failure Fingerprinting</h4>
+          <p>Uses machine learning to identify subtle spectral patterns  micro-vibrations in extraction fans or electrical noise in fryer thermostats  that precede catastrophic failure, benchmarking "Healthy State" signatures across diverse equipment sites.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon"><i class="fas fa-chart-line"></i></div>
+          <h4>RUL Delta Diagnostics</h4>
+          <p>Automatically diagnoses root causes of premature wear  grease accumulation in ventilation or limescale in combi-ovens  by analysing the delta between an asset's expected operational lifespan and its actual quality-loss velocity.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon"><i class="fas fa-cube"></i></div>
+          <h4>Kitchen Digital Twin Simulation</h4>
+          <p>Virtually tests the impact of operational changes  increasing fryer temperatures for peak demand or adjusting defrost cycles  against historical telemetry to predict failure risks and find optimal energy-saving paths before real-world implementation.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon"><i class="fas fa-memory"></i></div>
+          <h4>Outcome-Learning Reliability Memory</h4>
+          <p>Equipment failure events are transformed into "Failure Intelligence"  proprietary algorithms map unsuccessful outcomes back to the original telemetry profile recorded weeks prior, continuously improving prediction accuracy.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon"><i class="fas fa-network-wired"></i></div>
+          <h4>Federated Reliability Logic Network</h4>
+          <p>Anonymised sector-wide benchmarks allow independent takeaways and cafes to compare their Equipment Health DNA and energy efficiency against regional and national peers  without sharing private commercial data.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPETITOR COMPARISON -->
+  <section class="section-alt">
+    <div class="container">
+      <div class="label-tag">Competitor Analysis</div>
+      <h2 class="section-h2 dark">KitchenSense AI vs The Market</h2>
+      <div class="section-divider divider-blue"></div>
+      <p class="para-dark" style="max-width:700px;margin-bottom:0;">
+        No other solution unifies predictive forecasting, mechanical logic cloning, and outcome-linked memory into one modular SaaS platform tailored to the UK SME hospitality segment.
+      </p>
+      <div class="comp-table-wrap">
+        <table class="comp-table">
+          <thead>
+            <tr>
+              <th>Feature / Capability</th>
+              <th>Enterprise Compliance<br>(Checkit/SmartSense)</th>
+              <th>Mobile CMMS<br>(MaintainX/FaultFixers)</th>
+              <th>Binary Sensors<br>(Generic IoT)</th>
+              <th>Manual Logs<br>(Paper/Excel)</th>
+              <th class="highlight-col">KitchenSense AI</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Installation-to-Intervention Lifecycle</td><td class="no">Reporting only</td><td class="no">Task management</td><td class="no">Alert only</td><td class="no">No</td><td class="yes highlight-col">✓ Automated signal-to-action</td></tr>
+            <tr><td>Failure Fingerprinting & Anomaly Synthesis</td><td class="no">No</td><td class="no">No</td><td class="no">Threshold based</td><td class="no">No</td><td class="yes highlight-col">✓ Proprietary spectral ML</td></tr>
+            <tr><td>UK Fire Safety Benchmarks</td><td class="no">Limited (Global)</td><td class="no">No</td><td class="no">No</td><td class="no">Safety checks only</td><td class="yes highlight-col">✓ Trained on HSE/Home Office</td></tr>
+            <tr><td>Asset Health DNA & Signal Mapping</td><td class="no">Tags only</td><td class="no">Checklists only</td><td class="no">No</td><td class="no">No</td><td class="yes highlight-col">✓ Mechanical intent to RUL</td></tr>
+            <tr><td>Outcome-Learning Reliability Memory</td><td class="no">No</td><td class="no">No</td><td class="no">No</td><td class="no">No</td><td class="yes highlight-col">✓ Failure-to-repair matching</td></tr>
+            <tr><td>Operational Equity Analytics</td><td class="no">No</td><td class="no">No</td><td class="no">No</td><td class="no">No</td><td class="yes highlight-col">✓ Downtime-to-margin tracking</td></tr>
+            <tr><td>Federated Reliability Network</td><td class="no">No</td><td class="no">No</td><td class="no">No</td><td class="no">No</td><td class="yes highlight-col">✓ Anonymised benchmarking</td></tr>
+            <tr><td>Target Segment</td><td>Global Enterprise</td><td>General Facilities</td><td>Individual Stores</td><td>Independent SMEs</td><td class="highlight-col" style="font-weight:700;color:var(--blue);">UK SME Hospitality & Dark Kitchens</td></tr>
+            <tr><td>Cost Structure</td><td>High per-asset fee</td><td>Subscription</td><td>Tool-based</td><td>Time-intensive</td><td class="highlight-col" style="font-weight:700;color:var(--blue);">SME-optimised SaaS + Margin Protection</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div><!-- /page-platform -->
+
+
+<!-- ═══════════════════════════════════════════
+     PAGE : MARKET
+═══════════════════════════════════════════════ -->
+<div class="page" id="page-market">
+  <section class="section-blue">
+    <div class="container">
+      <div class="label-tag-white">Market Research & Validation</div>
+      <h2 class="section-h2 white">A £60B UK Market Primed for AI-Driven Reliability.</h2>
+      <div class="section-divider divider-white"></div>
+      <p class="para-light" style="max-width:760px;">
+        The global market for AI-driven predictive maintenance and kitchen equipment intelligence was estimated at USD 12.94 billion in 2024, projected to grow to USD 16.42 billion in 2025  exhibiting a CAGR of 26.9% through 2033. The UK hospitality technology market was valued at approximately USD 60.1 billion in 2025, with the UK emerging as a leading global hub for hospitality automation and safety-linked AI investment.
+      </p>
+    </div>
+  </section>
+
+  <section class="section-light">
+    <div class="container">
+      <div class="label-tag">Market Size & Opportunity</div>
+      <h2 class="section-h2 dark">176,685 UK Hospitality Businesses. 99.6% Are SMEs.</h2>
+      <div class="section-divider divider-blue"></div>
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h4>UK Hospitality SAM by Segment</h4>
+          <p>Serviceable addressable market across key UK hospitality segments (£ Millions)</p>
+          <div class="chart-wrap"><canvas id="chartSector"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h4>Market Pain Points  Industry Survey</h4>
+          <p>% of UK hospitality directors citing critical operational pain points</p>
+          <div class="chart-wrap"><canvas id="chartRootCause"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h4>KitchenSense AI vs Competitors</h4>
+          <p>Capability radar across key predictive maintenance features</p>
+          <div class="chart-wrap"><canvas id="chartRadar"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h4>Global AI Kitchen Maintenance Market Growth</h4>
+          <p>Market size in USD Billions & UK adoption rate 2022–2030</p>
+          <div class="chart-wrap"><canvas id="chartGrowth"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Key stats -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:44px;">
+        <div style="background:#fff;border:1px solid rgba(10,36,99,0.15);border-radius:16px;padding:28px;text-align:center;">
+          <div style="font-family:var(--display);font-size:42px;font-weight:800;color:var(--blue-light);margin-bottom:10px;">89%</div>
+          <p style="font-size:13px;color:var(--text-muted);line-height:1.6;">Of UK hospitality directors highly interested in predictive asset intelligence that links equipment behaviour to failure deltas</p>
+        </div>
+        <div style="background:#fff;border:1px solid rgba(10,36,99,0.15);border-radius:16px;padding:28px;text-align:center;">
+          <div style="font-family:var(--display);font-size:42px;font-weight:800;color:var(--blue-light);margin-bottom:10px;">84%</div>
+          <p style="font-size:13px;color:var(--text-muted);line-height:1.6;">Of operations directors admit that reactive maintenance is an unsustainable bottleneck given the 3–5× cost premium of emergency call-outs</p>
+        </div>
+        <div style="background:#fff;border:1px solid rgba(10,36,99,0.15);border-radius:16px;padding:28px;text-align:center;">
+          <div style="font-family:var(--display);font-size:42px;font-weight:800;color:var(--blue-light);margin-bottom:10px;">52%</div>
+          <p style="font-size:13px;color:var(--text-muted);line-height:1.6;">Willing to pay £150–£400/month per site for multi-asset predictive maintenance  confirming strong product-market fit</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-alt">
+    <div class="container">
+      <div class="label-tag">Regional Concentration</div>
+      <h2 class="section-h2 dark">Where KitchenSense AI Launches & Scales</h2>
+      <div class="section-divider divider-blue"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;">
+        <div>
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div style="background:#fff;border-left:4px solid var(--accent);border-radius:0 12px 12px 0;padding:20px 24px;">
+              <h4 style="font-family:var(--display);font-weight:700;color:var(--text-dark);margin-bottom:6px;">London & South East  Year 1 Launch</h4>
+              <p style="font-size:13px;color:var(--text-muted);line-height:1.7;">Over 45% of UK high-turnover food outlets. London alone represents 25%+ of all UK hospitality revenue. Operational Uptime value is 35% higher than the national average  the ideal launch territory.</p>
+            </div>
+            <div style="background:#fff;border-left:4px solid var(--blue-light);border-radius:0 12px 12px 0;padding:20px 24px;">
+              <h4 style="font-family:var(--display);font-weight:700;color:var(--text-dark);margin-bottom:6px;">Manchester & Birmingham  Year 2 Expansion</h4>
+              <p style="font-size:13px;color:var(--text-muted);line-height:1.7;">Among the fastest-growing dark kitchen and takeaway hubs in the UK. Agile operators relying heavily on automated systems to scale but lacking enterprise-grade engineering teams.</p>
+            </div>
+            <div style="background:#fff;border-left:4px solid var(--blue-dim);border-radius:0 12px 12px 0;padding:20px 24px;">
+              <h4 style="font-family:var(--display);font-weight:700;color:var(--text-dark);margin-bottom:6px;">USA, Germany & Australia  Year 3–5</h4>
+              <p style="font-size:13px;color:var(--text-muted);line-height:1.7;">High-density food-service markets with OSHA/NFPA compliance requirements. The platform's framework-agnostic architecture maps to global electrical standards and regional safety regulations.</p>
+            </div>
+          </div>
+        </div>
+        <div style="background:#fff;border:1px solid rgba(10,36,99,0.15);border-radius:18px;padding:28px;">
+          <div class="label-tag">UK Food Sector Forecast 2025–2026</div>
+          <div style="display:flex;flex-direction:column;gap:16px;margin-top:8px;">
+            <div style="padding:16px;background:var(--bg-light);border-radius:10px;">
+              <div style="font-family:var(--display);font-weight:700;color:var(--blue-dark);margin-bottom:4px;">+4.5% Productivity Growth</div>
+              <p style="font-size:13px;color:var(--text-muted);">Estimated for firms using predictive Installation-to-Intervention logic in 2026</p>
+            </div>
+            <div style="padding:16px;background:var(--bg-light);border-radius:10px;">
+              <div style="font-family:var(--display);font-weight:700;color:var(--blue-dark);margin-bottom:4px;">5–8% Insurance Premium Rise</div>
+              <p style="font-size:13px;color:var(--text-muted);">Expected in 2026 for food premises  driving demand for automated fire-risk detection</p>
+            </div>
+            <div style="padding:16px;background:var(--bg-light);border-radius:10px;">
+              <div style="font-family:var(--display);font-weight:700;color:var(--blue-dark);margin-bottom:4px;">45% of Restaurants Under Pressure</div>
+              <p style="font-size:13px;color:var(--text-muted);">From energy price spikes and rising labour costs  driving need for asset uptime extension</p>
+            </div>
+            <div style="padding:16px;background:var(--bg-light);border-radius:10px;">
+              <div style="font-family:var(--display);font-weight:700;color:var(--blue-dark);margin-bottom:4px;">26.9% Global CAGR Through 2033</div>
+              <p style="font-size:13px;color:var(--text-muted);">AI-driven predictive maintenance market  one of the fastest growing tech sectors worldwide</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div><!-- /page-market -->
+
+
+<!-- ═══════════════════════════════════════════
+     PAGE : PROCESS
+═══════════════════════════════════════════════ -->
+<div class="page" id="page-process">
+  <section class="section-blue">
+    <div class="container">
+      <div class="label-tag-white">How It Works</div>
+      <h2 class="section-h2 white">From Raw Telemetry to Operational Equity</h2>
+      <div class="section-divider divider-white"></div>
+      <p class="para-light" style="max-width:700px;">A four-phase R&D-validated process that transforms unpredictable mechanical burdens into permanent, institutional Operational Equity.</p>
+    </div>
+  </section>
+
+  <section class="section-light">
+    <div class="container">
+
+      <div class="process-step">
+        <div>
+          <div class="step-num">Phase 01 · Installation</div>
+          <h3 class="step-h3">Retrofit Sensor Deployment & Kitchen Asset Ontology</h3>
+          <p class="step-p">Deploy secure "Reliability Logic Nodes"  low-cost IoT accelerometers, thermal probes, and current clamps  retrofitted above any existing kitchen hardware without equipment lock-in. The proprietary Kitchen Asset Ontology (KAO) converts raw machine telemetry into structured "Reliability Objects," preserving specific mechanical nuances of each asset category.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <span class="risk-badge risk-blue"><span class="risk-dot"></span>IoT Sensor Nodes</span>
+            <span class="risk-badge risk-light"><span class="risk-dot"></span>KAO Schema</span>
+            <span class="risk-badge risk-green"><span class="risk-dot"></span>Zero Lock-In</span>
+          </div>
+        </div>
+        <div class="step-img">
+          <img src="KIT7.jpg" alt="IoT Sensor Installation">
+        </div>
+      </div>
+
+      <div class="process-step">
+        <div class="step-img">
+          <img src="KIT8.jpg" alt="AI Signal Processing">
+        </div>
+        <div>
+          <div class="step-num">Phase 02 · Intelligence</div>
+          <h3 class="step-h3">AI Signal Forensics & Failure Fingerprinting</h3>
+          <p class="step-p">The Custom Anomaly Detection Classifier and Vibration Spectrum Forensics Engine analyse high-velocity sensor data in real-time  detecting "Pre-Failure Signatures" such as motor bearing wear or heating element degradation with 92% accuracy. The system identifies the specific "Failure Fingerprint" of each asset's lifecycle long before physical symptoms appear.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <span class="risk-badge risk-blue"><span class="risk-dot"></span>ML Anomaly Detection</span>
+            <span class="risk-badge risk-light"><span class="risk-dot"></span>92% Accuracy</span>
+            <span class="risk-badge risk-green"><span class="risk-dot"></span>2–6 Week Warning</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="process-step">
+        <div>
+          <div class="step-num">Phase 03 · Action</div>
+          <h3 class="step-h3">Signal-to-Action Synthesis & Maintenance Routing</h3>
+          <p class="step-p">Complex sensor signals are automatically deconstructed into structured "Asset Health Reports" and multi-step maintenance workflows  no manual engineering review required. Reliability Delta Diagnostics (RDD) identifies mechanical drift in real-time, while Risk-Weighted Maintenance Evolution automatically prioritises interventions for high-dependency assets based on degradation trends.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <span class="risk-badge risk-blue"><span class="risk-dot"></span>Auto-Synthesis</span>
+            <span class="risk-badge risk-light"><span class="risk-dot"></span>RDD Engine</span>
+            <span class="risk-badge risk-green"><span class="risk-dot"></span>Off-Peak Scheduling</span>
+          </div>
+        </div>
+        <div class="step-img">
+          <img src="KIT9.jpg" alt="Predictive Maintenance Action">
+        </div>
+      </div>
+
+      <div class="process-step">
+        <div class="step-img">
+          <img src="KIT10.jpg" alt="Analytics Dashboard">
+        </div>
+        <div>
+          <div class="step-num">Phase 04 · Equity</div>
+          <h3 class="step-h3">Reliability Dashboards & Operational Equity</h3>
+          <p class="step-p">The Closed-Loop Asset Stewardship Model generates comprehensive Reliability Dashboards linking specific predictive interventions to direct financial margin protection and reduced energy consumption. Outcome-Learning Reliability Memory continuously adapts  every repair "teaches" the system to refine future prediction accuracy, building permanent institutional Operational Equity.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <span class="risk-badge risk-blue"><span class="risk-dot"></span>Reliability Dashboards</span>
+            <span class="risk-badge risk-light"><span class="risk-dot"></span>ESG Reporting</span>
+            <span class="risk-badge risk-green"><span class="risk-dot"></span>Margin Protection</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</div><!-- /page-process -->
+
+
+<!-- ═══════════════════════════════════════════
+     PAGE : FAQ
+═══════════════════════════════════════════════ -->
+<div class="page" id="page-faq">
+  <section class="section-blue">
+    <div class="container">
+      <div class="label-tag-white">Frequently Asked Questions</div>
+      <h2 class="section-h2 white">Everything You Need to Know About KitchenSense AI</h2>
+      <div class="section-divider divider-white"></div>
+    </div>
+  </section>
+  <section class="section-light">
+    <div class="container" style="max-width:860px;">
+      <div class="faq-wrap">
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFAQ(this)">
+            <h4>What exactly is the "Downtime Gap" that KitchenSense AI addresses?</h4>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-body">The "Downtime Gap" is the critical space between when an asset begins to degrade and when a traditional system detects a problem  by which point it's already too late. Most UK kitchens still rely on manual inspections or basic "snapshot" checks that only trigger an alarm after a critical threshold has been breached. KitchenSense AI bridges this gap by detecting mechanical drift weeks before catastrophic failure, giving operators a 2-to-6 week advance warning window.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFAQ(this)">
+            <h4>How does the retrofit installation work? Do I need to replace my existing equipment?</h4>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-body">No equipment replacement is needed. KitchenSense AI is designed with a "retrofit-first" philosophy  our secure "Reliability Logic Nodes" (IoT accelerometers, thermal probes, and current clamps) sit above any existing hardware  fryers, ovens, fridges, extraction systems  without manufacturer lock-in. Installation is typically completed within a day, and the platform integrates with your existing UK hospitality tech stack (EPOS, FM software, fire safety systems) via plug-and-play APIs.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFAQ(this)">
+            <h4>What is "Asset Health DNA" and why is it important?</h4>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-body">Asset Health DNA is the proprietary framework by which KitchenSense AI identifies and clones the baseline performance signatures of each healthy commercial appliance  motor current, vibration frequency, thermal output. Unlike siloed maintenance records kept by external contractors, this platform allows kitchen operators to own their Equipment Degradation Logic as a proprietary asset. This means expert knowledge of specific appliance quirks remains within the business even after a Head Chef or Facilities Manager departs  eliminating "Equipment Intuition Loss."</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFAQ(this)">
+            <h4>How accurate are the failure predictions?</h4>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-body">Our R&D Phase 2 validation demonstrated 92% accuracy in detecting "Pre-Failure Signatures"  such as motor bearing wear or heating element degradation  providing a 2-to-6 week advance warning window before total asset breakdown. The 12-week UK pilot programme across 5 hospitality sites showed a 32% average increase in equipment availability during peak shifts and 26% reduction in emergency call-out costs across 45 high-dependency assets.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFAQ(this)">
+            <h4>How does the platform help with UK fire safety compliance?</h4>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-body">The food and drink sector accounts for 19% of all UK workplace fires (1,275 incidents in 2024/25). KitchenSense AI's Machine-in-the-Loop Safety Index detects electrical faults and fat-accumulation-driven overheating 2–6 weeks before ignition. The platform generates audit-ready HSE and Fire Safety compliance reports, satisfying the UK's Fire Safety Act 2021 and FSA compliance requirements. Every automated maintenance interaction is logged with high-fidelity logs and verifiable Reliability Logic chains for regulatory inquiries from the HSE, local fire authorities, or Environmental Health Officers.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFAQ(this)">
+            <h4>Is my data secure? How does the Federated Reliability Logic Network work?</h4>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-body">The platform maintains strict adherence to ICO guidance on AI and Data Protection (UK GDPR) and the upcoming Data (Use and Access) Act 2025. The Federated Reliability Logic Network (FRLN) uses federated learning architecture  enabling anonymised "Reliability DNA" from hundreds of UK hospitality sites to improve predictive models without sharing sensitive commercial data. Your operational telemetry is captured by secure cloud-native Reliability Logic Nodes with end-to-end encryption, following UK Cyber Essentials Plus standards.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFAQ(this)">
+            <h4>What pricing plans are available and who are they designed for?</h4>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-body">KitchenSense AI offers three SaaS subscription tiers: Starter at £50/month for independent takeaways and boutique cafes (basic asset health tracking, 1 high-dependency asset); Professional at £150/month for mid-market restaurant groups and franchises (full RDD, Signal-to-Action Auto-Synthesis, POS/Energy integrations); and Enterprise at £300/month for global QSR chains and multi-site hospitality (Installation-to-Intervention Pipeline, FRLN access, dedicated Reliability-Ops Success Manager). One-off fees include £600 Asset Orchestration Setup and £500 Asset Health Audit.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFAQ(this)">
+            <h4>What are the growth and expansion plans for KitchenSense AI?</h4>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-body">Year 1 focuses on independent restaurants, dark kitchens, and takeaway franchises in London and the South East (5–10 pilot sites). Year 2 expands to 50–100 kitchen locations across Manchester, Birmingham, and Leeds. Year 3 enters all UK regions plus early international pilots in the USA, Germany, and Australia. By Years 4–5, the platform targets 500+ operational kitchen teams internationally, ultimately creating over 20 high-value UK-based technical and operations jobs and establishing Asset Health DNA as the global standard for kitchen operational consistency.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div><!-- /page-faq -->
+
+
+<!-- ═══════════════════════════════════════════
+     PAGE : PRICING
+═══════════════════════════════════════════════ -->
+<div class="page" id="page-pricing">
+  <section class="section-blue">
+    <div class="container">
+      <div class="label-tag-white">Pricing & Plans</div>
+      <h2 class="section-h2 white">SME-Optimised. Margin-Protecting.<br>Reliability-as-a-Service.</h2>
+      <div class="section-divider divider-white"></div>
+      <p class="para-light" style="max-width:700px;">
+        Tiered pricing designed to provide accessibility for independent takeaways while scaling to full predictive intelligence for large hospitality groups  starting at just £50/month.
+      </p>
+    </div>
+  </section>
+  <section class="section-light">
+    <div class="container">
+      <div class="pricing-grid">
+        <!-- STARTER -->
+        <div class="price-card">
+          <div class="price-tier">Starter Plan</div>
+          <div class="price-title">Basic Reliability Ops</div>
+          <div class="price-amount">£50<span>/month</span></div>
+          <div class="price-desc">For independent takeaways, boutique cafes, and food trucks taking their first step into predictive maintenance.</div>
+          <ul class="price-features">
+            <li>Basic asset health tracking</li>
+            <li>Asset Health DNA visualisation</li>
+            <li>Framework-agnostic mapping (1 high-dependency asset)</li>
+            <li>Temperature and power threshold tracking</li>
+            <li>Email alerts for critical anomalies</li>
+            <li>Monthly reliability report</li>
+            <li>UK GDPR compliant data storage</li>
+          </ul>
+          <button class="btn-secondary" onclick="showPage('contact')" style="width:100%;justify-content:center;">Get Started</button>
+        </div>
+        <!-- PROFESSIONAL -->
+        <div class="price-card featured">
+          <div class="featured-label">Most Popular</div>
+          <div class="price-tier">Professional Plan</div>
+          <div class="price-title">Full Reliability Delta Diagnostics</div>
+          <div class="price-amount">£150<span>/month</span></div>
+          <div class="price-desc">For mid-market restaurant groups and regional fast-food franchises requiring full predictive intelligence.</div>
+          <ul class="price-features">
+            <li>Full Reliability Delta Diagnostics (RDD)</li>
+            <li>Signal-to-Action Auto-Synthesis</li>
+            <li>POS & Energy system integrations</li>
+            <li>RDD validation & fire risk fingerprinting</li>
+            <li>Up to 10 high-dependency assets</li>
+            <li>Real-time maintenance workflow generation</li>
+            <li>HSE/FSA compliance reporting</li>
+            <li>Operational Equity analytics dashboard</li>
+          </ul>
+          <button class="btn-primary" onclick="showPage('contact')" style="width:100%;justify-content:center;">Start Free Trial</button>
+        </div>
+        <!-- ENTERPRISE -->
+        <div class="price-card">
+          <div class="price-tier">Enterprise Plan</div>
+          <div class="price-title">Installation-to-Intervention Pipeline</div>
+          <div class="price-amount">£300<span>/month</span></div>
+          <div class="price-desc">For global QSR chains and multi-site hospitality franchises requiring complete institutional reliability intelligence.</div>
+          <ul class="price-features">
+            <li>Full Installation-to-Intervention Pipeline</li>
+            <li>Secure Reliability Logic Nodes (multi-site)</li>
+            <li>Federated Reliability Logic Network (FRLN) access</li>
+            <li>Dedicated Reliability-Ops Success Manager</li>
+            <li>Unlimited high-dependency asset monitoring</li>
+            <li>Kitchen Digital Twin Simulation</li>
+            <li>Advanced ESG & Net Zero reporting</li>
+            <li>API licensing for CMMS/FM systems</li>
+            <li>Priority 24/7 technical support</li>
+          </ul>
+          <button class="btn-secondary" onclick="showPage('contact')" style="width:100%;justify-content:center;">Contact Sales</button>
+        </div>
+      </div>
+
+      <!-- Add-ons -->
+      <div style="margin-top:56px;">
+        <div class="label-tag">Professional Add-Ons</div>
+        <h3 style="font-family:var(--display);font-size:26px;font-weight:700;color:var(--text-dark);margin-bottom:28px;">Additional Services</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;" class="addons-grid">
+          <div style="background:#fff;border:1px solid rgba(10,36,99,0.15);border-radius:16px;padding:28px;display:flex;gap:20px;">
+            <div style="width:52px;height:52px;border-radius:12px;background:rgba(0,212,255,0.12);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:22px;flex-shrink:0;border:1px solid rgba(0,212,255,0.25);"><i class="fas fa-cogs"></i></div>
+            <div>
+              <div style="font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:6px;">One-off Fee</div>
+              <h4 style="font-family:var(--display);font-size:17px;font-weight:700;color:var(--text-dark);margin-bottom:6px;">Asset Orchestration Setup  £600/site</h4>
+              <p style="font-size:13px;color:var(--text-muted);line-height:1.7;">Initial hardware and sensor configuration for Reliability Logic Nodes, including KAO schema mapping and baseline health fingerprinting for all monitored assets.</p>
+            </div>
+          </div>
+          <div style="background:#fff;border:1px solid rgba(10,36,99,0.15);border-radius:16px;padding:28px;display:flex;gap:20px;">
+            <div style="width:52px;height:52px;border-radius:12px;background:rgba(0,212,255,0.12);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:22px;flex-shrink:0;border:1px solid rgba(0,212,255,0.25);"><i class="fas fa-stethoscope"></i></div>
+            <div>
+              <div style="font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:6px;">One-off Fee</div>
+              <h4 style="font-family:var(--display);font-size:17px;font-weight:700;color:var(--text-dark);margin-bottom:6px;">Asset Health Audit  £500/session</h4>
+              <p style="font-size:13px;color:var(--text-muted);line-height:1.7;">Specialised multi-asset baseline validation and Kitchen Reliability Logic Orchestration Setup  performed by our certified Reliability-Ops engineers for complex kitchen environments.</p>
+            </div>
+          </div>
+          <div style="background:#fff;border:1px solid rgba(10,36,99,0.15);border-radius:16px;padding:28px;display:flex;gap:20px;">
+            <div style="width:52px;height:52px;border-radius:12px;background:rgba(0,212,255,0.12);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:22px;flex-shrink:0;border:1px solid rgba(0,212,255,0.25);"><i class="fas fa-chart-bar"></i></div>
+            <div>
+              <div style="font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:6px;">Annual Subscription</div>
+              <h4 style="font-family:var(--display);font-size:17px;font-weight:700;color:var(--text-dark);margin-bottom:6px;">Premium Reliability Reports  £2,000–£5,000/year</h4>
+              <p style="font-size:13px;color:var(--text-muted);line-height:1.7;">Advanced sector benchmarking and Operational Equity growth insights via the FRLN  essential for multi-site institutions requiring strategic asset scaling and margin protection reporting.</p>
+            </div>
+          </div>
+          <div style="background:linear-gradient(135deg,var(--blue),var(--blue-dark));border-radius:16px;padding:28px;display:flex;gap:20px;color:#fff;">
+            <div style="width:52px;height:52px;border-radius:12px;background:rgba(0,212,255,0.2);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:22px;flex-shrink:0;border:1px solid rgba(0,212,255,0.3);"><i class="fas fa-handshake"></i></div>
+            <div>
+              <div style="font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(0,212,255,0.8);margin-bottom:6px;">Pilot Programme</div>
+              <h4 style="font-family:var(--display);font-size:17px;font-weight:700;color:#fff;margin-bottom:6px;">12-Week UK Pilot  Tailored Pricing</h4>
+              <p style="font-size:13px;color:rgba(255,255,255,0.75);line-height:1.7;">Join our current cohort of London and Manchester dark kitchens and fast-food franchises for a fully supported 12-week pilot deployment with direct access to Dilipvan Gauswami's team.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div><!-- /page-pricing -->
+
+
+<!-- ═══════════════════════════════════════════
+     PAGE : CONTACT
+═══════════════════════════════════════════════ -->
+<div class="page" id="page-contact">
+
+  <section class="contact-hero">
+    <div class="container">
+
+      <div class="label-tag-white">Get in Touch</div>
+
+      <h2 class="section-h2 white">
+        Request a Demo or Join the Pilot Programme
+      </h2>
+
+      <div class="section-divider divider-white"></div>
+
+      <div class="contact-wrap">
+
+        <!-- CONTACT FORM -->
+        <div class="contact-form">
+
+          <h3 style="
+            font-family:var(--display);
+            font-size:22px;
+            font-weight:700;
+            color:var(--text-dark);
+            margin-bottom:6px;
+          ">
+            Book Your Platform Demo
+          </h3>
+
+          <p style="
+            font-size:14px;
+            color:var(--text-muted);
+            margin-bottom:24px;
+            line-height:1.7;
+          ">
+            Fill in your details and our team will contact you within 24 hours to schedule a live demonstration of the KitchenSense AI platform.
+          </p>
+
+          <form action="https://api.web3forms.com/submit" method="POST">
+
+            <!-- WEB3FORMS ACCESS KEY -->
+            <input 
+              type="hidden" 
+              name="access_key" 
+              value="69ed0f0a-15be-4488-a41d-5fc33d08e4bb"
+            >
+
+            <!-- OPTIONAL SUBJECT -->
+            <input 
+              type="hidden" 
+              name="subject" 
+              value="New KitchenSense AI Demo Request"
+            >
+
+            <!-- OPTIONAL FROM NAME -->
+            <input 
+              type="hidden" 
+              name="from_name" 
+              value="KitchenSense AI Website"
+            >
+
+            <div class="form-group">
+              <label>Full Name</label>
+              <input 
+                type="text" 
+                name="name" 
+                placeholder="Your full name"
+                required
+              >
+            </div>
+
+            <div class="form-group">
+              <label>Business Email</label>
+              <input 
+                type="email" 
+                name="email" 
+                placeholder="you@restaurant.co.uk"
+                required
+              >
+            </div>
+
+            <div class="form-group">
+              <label>Business Name</label>
+              <input 
+                type="text" 
+                name="business_name" 
+                placeholder="Your restaurant or group name"
+              >
+            </div>
+
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input 
+                type="text" 
+                name="phone" 
+                placeholder="+44 7XXX XXX XXX"
+              >
+            </div>
+
+            <div class="form-group">
+              <label>Number of Kitchen Sites</label>
+              <select name="sites">
+                <option>1 site (independent)</option>
+                <option>2–5 sites (small group)</option>
+                <option>6–20 sites (regional)</option>
+                <option>20+ sites (multi-site / franchise)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>What's Your Biggest Challenge?</label>
+              <textarea 
+                name="message"
+                rows="6"
+                placeholder="Tell us about your current maintenance challenges, equipment failures, fire safety concerns, or operational downtime issues..."
+                required
+              ></textarea>
+            </div>
+
+            <button 
+              type="submit" 
+              class="btn-primary"
+              style="
+                width:100%;
+                justify-content:center;
+                margin-top:10px;
+              "
+            >
+              Send Demo Request
+              <i class="fas fa-arrow-right" style="margin-left:6px;"></i>
+            </button>
+
+          </form>
+        </div>
+
+        <!-- CONTACT INFO -->
+        <div class="contact-info">
+
+          <h3>KitchenSense AI</h3>
+
+          <p>
+            Predict. Prevent. Perform. Profit. Bridging the Downtime Gap through Kitchen Intelligence for the UK's hospitality businesses.
+          </p>
+
+          <div class="contact-detail">
+            <div class="icon">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+
+            <div class="text">
+              <strong>Headquarters</strong>
+              <span>London & Manchester, United Kingdom</span>
+            </div>
+          </div>
+
+          <div class="contact-detail">
+            <div class="icon">
+              <i class="fas fa-envelope"></i>
+            </div>
+
+            <div class="text">
+              <strong>Email</strong>
+              <span>kitchensenseaiuk@outlook.com</span>
+            </div>
+          </div>
+
+          <div class="contact-detail">
+            <div class="icon">
+              <i class="fas fa-phone"></i>
+            </div>
+
+            <div class="text">
+              <strong>Phone</strong>
+              <span>+44 (0) 7919262845</span>
+            </div>
+          </div>
+
+          <div class="contact-detail">
+            <div class="icon">
+              <i class="fas fa-user-tie"></i>
+            </div>
+
+            <div class="text">
+              <strong>Founder & CEO</strong>
+              <span>Dilipvan Gauswami</span>
+            </div>
+          </div>
+
+          <div class="contact-detail">
+            <div class="icon">
+              <i class="fas fa-calendar-check"></i>
+            </div>
+
+            <div class="text">
+              <strong>Pilot Programme</strong>
+              <span>
+                Recruiting London dark kitchens & hospitality groups for predictive maintenance trials
+              </span>
+            </div>
+          </div>
+
+          <!-- STATS BOX -->
+          <div style="
+            margin-top:28px;
+            padding:20px;
+            background:rgba(0,212,255,0.08);
+            border-radius:16px;
+            border:1px solid rgba(0,212,255,0.25);
+          ">
+
+            <div style="
+              font-family:var(--mono);
+              font-size:10px;
+              letter-spacing:2px;
+              text-transform:uppercase;
+              color:#00D4FF;
+              margin-bottom:14px;
+            ">
+              Pilot Performance Metrics
+            </div>
+
+            <div style="
+              display:flex;
+              flex-direction:column;
+              gap:10px;
+            ">
+
+              <div style="
+                display:flex;
+                justify-content:space-between;
+                font-size:14px;
+                color:rgba(255,255,255,0.82);
+              ">
+                <span>Peak-hour uptime increase</span>
+                <strong style="color:#00D4FF;">+32%</strong>
+              </div>
+
+              <div style="
+                display:flex;
+                justify-content:space-between;
+                font-size:14px;
+                color:rgba(255,255,255,0.82);
+              ">
+                <span>Emergency repair reduction</span>
+                <strong style="color:#00D4FF;">-26%</strong>
+              </div>
+
+              <div style="
+                display:flex;
+                justify-content:space-between;
+                font-size:14px;
+                color:rgba(255,255,255,0.82);
+              ">
+                <span>Fire-risk detection accuracy</span>
+                <strong style="color:#00D4FF;">92%</strong>
+              </div>
+
+              <div style="
+                display:flex;
+                justify-content:space-between;
+                font-size:14px;
+                color:rgba(255,255,255,0.82);
+              ">
+                <span>User satisfaction rating</span>
+                <strong style="color:#00D4FF;">4.7/5</strong>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</div>
+<!-- ═══════════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">KitchenSense AI</div>
+        <div class="footer-desc">
+          The UK's first AI-powered Kitchen Equipment Failure Prediction Platform  predicting failures before they happen, preventing downtime, and maximising performance for the UK's 176,685 hospitality businesses.
+          <br><br>
+          <em style="color:rgba(0,212,255,0.7);font-style:normal;">"We help kitchen businesses stay operational, reduce unexpected breakdowns, and deliver consistent performance where it matters most."  Dilipvan Gauswami, Founder & CEO</em>
+        </div>
+        <div class="footer-badges">
+          <span class="footer-badge">AI-Powered</span>
+          <span class="footer-badge">IoT Sensor Integration</span>
+          <span class="footer-badge">Cloud Platform</span>
+          <span class="footer-badge">HSE Compliant</span>
+          <span class="footer-badge">Net Zero Aligned</span>
+          <span class="footer-badge">FSA Compliant</span>
+          <span class="footer-badge">UK GDPR</span>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Platform</div>
+        <div class="footer-col">
+          <a onclick="showPage('platform')">Installation-to-Intervention Engine</a>
+          <a onclick="showPage('platform')">Asset Failure Fingerprinting</a>
+          <a onclick="showPage('platform')">Reliability Delta Diagnostics</a>
+          <a onclick="showPage('platform')">Kitchen Digital Twin Simulation</a>
+          <a onclick="showPage('platform')">Federated Reliability Network</a>
+          <a onclick="showPage('platform')">Fire Safety Intelligence</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <div class="footer-col">
+          <a onclick="showPage('about')">About KitchenSense AI</a>
+          <a onclick="showPage('about')">Dilipvan Gauswami · Founder & CEO</a>
+          <a onclick="showPage('process')">How It Works</a>
+          <a onclick="showPage('faq')">FAQ</a>
+          <a onclick="showPage('market')">Market Analysis</a>
+          <a onclick="showPage('pricing')">Pricing & Plans</a>
+          <a onclick="showPage('contact')">Request a Demo</a>
+          <a onclick="showPage('contact')">Pilot Programme</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Solutions</div>
+        <div class="footer-col">
+          <a onclick="showPage('platform')">Independent Restaurants</a>
+          <a onclick="showPage('platform')">Dark Kitchens & QSRs</a>
+          <a onclick="showPage('platform')">Multi-Site Franchises</a>
+          <a onclick="showPage('platform')">SME Hospitality Groups</a>
+          <a onclick="showPage('pricing')">Starter · £50/mo</a>
+          <a onclick="showPage('pricing')">Professional · £150/mo</a>
+          <a onclick="showPage('pricing')">Enterprise · £300/mo</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom-bar">
+      <p>© 2026 <span>KitchenSense AI</span> · London & Manchester, UK · UK GDPR Compliant · by Dilipvan Gauswami</p>
+      <div class="footer-bottom-links">
+        <a onclick="showPage('contact')">Privacy Policy</a>
+        <a onclick="showPage('contact')">Terms of Service</a>
+        <a onclick="showPage('contact')">Confidential Business Plan</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════════ -->
+<script>
+/* ─── PAGE NAV ───────────────────────────────── */
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-links button').forEach(b=>b.classList.remove('active'));
+  const pg=document.getElementById('page-'+name);
+  if(pg){pg.classList.add('active');}
+  const btn=document.getElementById('nav-'+name);
+  if(btn){btn.classList.add('active');}
+  window.scrollTo({top:0,behavior:'instant'});
+  if(name==='market'&&!window.marketChartsLoaded){initMarketCharts();window.marketChartsLoaded=true;}
+}
+
+function toggleCard(btn){
+  const card=btn.closest('.platform-card');
+  card.classList.toggle('open');
+  btn.innerHTML=card.classList.contains('open')?'Show Less':'Learn More';
+}
+
+function toggleFAQ(el){el.parentElement.classList.toggle('open');}
+
+function closeMobile(){
+  document.getElementById('mobileNav').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+}
+
+document.getElementById('hamburger').addEventListener('click',function(){
+  this.classList.toggle('open');
+  document.getElementById('mobileNav').classList.toggle('open');
+});
+
+/* ─── CHART THEME  KitchenSense AI Blues & Cyan ─── */
+const BLU='rgba(10,36,99,1)';
+const BLU2='rgba(29,78,216,0.8)';
+const BLU3='rgba(29,78,216,0.4)';
+const CYAN='rgba(0,212,255,0.9)';
+const CYAN2='rgba(56,189,248,0.7)';
+const GRID='rgba(10,36,99,0.08)';
+const MUTED='rgba(30,58,90,0.8)';
+
+Chart.defaults.font.family="'IBM Plex Mono', monospace";
+Chart.defaults.font.size=11;
+Chart.defaults.color=MUTED;
+
+/* ─── MARKET CHARTS ──────────────────────────── */
+function initMarketCharts(){
+  // UK Hospitality SAM by Segment
+  new Chart(document.getElementById('chartSector').getContext('2d'),{
+    type:'bar',
+    data:{
+      labels:['Dark Kitchens & QSRs','Independent Restaurants','Multi-Site Franchises','Regional Catering Groups'],
+      datasets:[{
+        label:'SAM (£ Millions)',
+        data:[140,110,85,65],
+        backgroundColor:[BLU2,BLU,BLU3,CYAN2],
+        borderRadius:6,barPercentage:0.6
+      }]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:MUTED}},y:{grid:{color:GRID},ticks:{color:MUTED,callback:v=>'£'+v+'M'}}}}
+  });
+
+  // Pain Points Doughnut
+  new Chart(document.getElementById('chartRootCause').getContext('2d'),{
+    type:'doughnut',
+    data:{
+      labels:['Downtime Gap Awareness (76%)','Reactive Maintenance Unsustainable (84%)','Interest in Predictive Intelligence (89%)','Equipment Intuition Loss Concern (71%)','Willingness to Pay £150–£400/mo (52%)'],
+      datasets:[{
+        data:[76,84,89,71,52],
+        backgroundColor:[BLU,BLU2,CYAN,BLU3,CYAN2],
+        borderColor:['rgba(10,36,99,0.9)','rgba(29,78,216,0.7)','rgba(0,212,255,0.8)','rgba(29,78,216,0.4)','rgba(56,189,248,0.7)'],
+        borderWidth:1.5
+      }]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:MUTED,boxWidth:10,padding:10,font:{size:10}}}}}
+  });
+
+  // Radar Competitive
+  new Chart(document.getElementById('chartRadar').getContext('2d'),{
+    type:'radar',
+    data:{
+      labels:['Failure Fingerprinting','UK Fire Safety','Asset Health DNA','Outcome Learning','Federated Network','Retrofit-First'],
+      datasets:[
+        {label:'KitchenSense AI',data:[5,5,5,5,5,5],backgroundColor:'rgba(0,212,255,0.1)',borderColor:CYAN,borderWidth:2,pointBackgroundColor:CYAN},
+        {label:'Checkit/SmartSense',data:[1,2,1,1,1,2],backgroundColor:'rgba(29,78,216,0.05)',borderColor:BLU2,borderWidth:1.5,pointBackgroundColor:BLU2},
+        {label:'MaintainX/FaultFixers',data:[1,1,1,1,1,2],backgroundColor:'rgba(10,36,99,0.04)',borderColor:'rgba(10,36,99,0.5)',borderWidth:1.5,pointBackgroundColor:'rgba(10,36,99,0.5)'},
+        {label:'Generic IoT Sensors',data:[2,1,1,1,1,3],backgroundColor:'rgba(56,189,248,0.04)',borderColor:CYAN2,borderWidth:1.5,pointBackgroundColor:CYAN2},
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:MUTED,boxWidth:10,padding:14,font:{size:10}}}},scales:{r:{backgroundColor:'rgba(0,212,255,0.01)',grid:{color:GRID},pointLabels:{color:MUTED,font:{size:10}},ticks:{display:false},min:0,max:5}}}
+  });
+
+  // Market Growth
+  new Chart(document.getElementById('chartGrowth').getContext('2d'),{
+    type:'bar',
+    data:{
+      labels:['2022','2023','2024','2025','2026','2027','2028','2030'],
+      datasets:[
+        {label:'Global AI Predictive Maintenance Market (USD B)',data:[8,10,12.94,16.42,21,30,42,80],backgroundColor:BLU2,borderRadius:5,barPercentage:0.55},
+        {type:'line',label:'UK AI Kitchen Maintenance Adoption %',data:[null,2,5,9,18,28,42,65],borderColor:CYAN,borderWidth:2,yAxisID:'y2',tension:0.4,pointBackgroundColor:CYAN,fill:false}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:MUTED,boxWidth:10,padding:12,font:{size:10}}}},scales:{x:{grid:{color:GRID},ticks:{color:MUTED}},y:{grid:{color:GRID},ticks:{color:MUTED,callback:v=>'$'+v+'B'}},y2:{position:'right',grid:{display:false},ticks:{color:MUTED,callback:v=>v+'%'}}}}
+  });
+}
+</script>
+</body>
+</html>
